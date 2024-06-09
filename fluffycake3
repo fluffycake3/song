@@ -1,0 +1,47 @@
+import time
+from threading import Thread, Lock
+import sys
+
+lock = Lock()
+
+def animate_text(text, delay=0.1):
+    with lock:
+        for char in text:
+            sys.stdout.write(char)
+            sys.stdout.flush()
+            time.sleep(delay)
+        print()
+
+def sing_lyric(lyric, delay, speed):
+    time.sleep(delay)
+    animate_text(lyric, speed)
+
+def sing_song():
+    lyrics = [
+        ("hope that eases the pain  ", 0.1),
+        ("so you remember to miss me", 0.09),
+        ("and you sold ur car", 0.08),
+        ("now you walk for miles", 0.1),
+        ("bet your feet feel numb", 0.08),
+        ("crosswalks in my mind are shaky, so please holdn on tight                ", 0.05),
+        ("all my demons run wild     ", 0.19),
+        ("all my demons have ur smile    ", 0.18),
+        ("in the city of angels      ", 0.17),
+        ("in the city of angels      ", 0.17),
+        ("hope new york holds you       ", 0.17),
+        ("hope it hold u like i do     ", 0.17),
+    ]
+    delays = [0.3, 0.4, 0.5, 0.6, 0.7, 10.0, 10.5, 10.6, 10.7, 10.7, 10.8, 10.9]
+    
+    threads = []
+    for i in range(len(lyrics)):
+        lyric, speed = lyrics[i]
+        t = Thread(target=sing_lyric, args=(lyric, delays[i], speed))
+        threads.append(t)
+        t.start()
+    
+    for thread in threads:
+        thread.join()
+
+if __name__ == "__main__":
+    sing_song() 
