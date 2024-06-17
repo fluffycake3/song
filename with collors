@@ -1,0 +1,57 @@
+import time
+from threading import Thread, Lock
+import sys
+
+lock = Lock()
+
+COLORS = {
+    'RED': '\033[91m',
+    'GREEN': '\033[92m',
+    'YELLOW': '\033[93m',
+    'BLUE': '\033[94m',
+    'MAGENTA': '\033[95m',
+    'CYAN': '\033[96m',
+    'WHITE': '\033[97m',
+    'RESET': '\033[0m'
+}
+
+
+def animate_text(text, delay=0.1, color=''):
+    with lock:
+        for word in text.split():
+            sys.stdout.write(f'{color}{word} ')
+            sys.stdout.flush()
+            time.sleep(delay)
+        sys.stdout.write(COLORS['RESET'] + '\n')  # Reset warna setelah selesai
+        print()
+
+def sing_lyric(lyric, delay, speed, color=''):
+    time.sleep(delay)
+    animate_text(lyric, speed, color)
+
+def sing_song():
+    lyrics = [
+        ("oh, tear ducts and rust", 0.3, 'MAGENTA'),
+        ("i'll fix it for us", 0.3, 'MAGENTA'),
+        ("we're collecting dust", 0.6,'RED'),
+        ("but our love's enoughhh", 0.5,'RED'),
+        ("you're holding it in", 0.5, 'GREEN'),
+        ("you're pouring a drink (juice)", 0.4, 'GREEN'),
+        ("no, nothing is as bad as it seemsss", 0.8, 'YELLOW'),
+        ("we'll come cleannn", 0.7, 'CYAN'),
+    ]
+    delays = [0.2, 0.3, 0.5, 0.6, 0.7, 0.3, 0.15 , 0.15]
+    
+    threads = []
+    for i in range(len(lyrics)):
+        lyric, speed, color = lyrics[i]
+        t = Thread(target=sing_lyric, args=(lyric, delays[i], speed, COLORS[color]))
+        threads.append(t)
+        t.start()
+        t.join()
+    
+    for thread in threads:
+        thread.join()
+
+if __name__ == "__main__":
+    sing_song() 
