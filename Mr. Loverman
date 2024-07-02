@@ -1,0 +1,68 @@
+import time
+from threading import Thread, Lock
+import sys
+
+lock = Lock()
+
+COLORS = {
+    'RED': '\033[91m',
+    'GREEN': '\033[92m',
+    'YELLOW': '\033[93m',
+    'BLUE': '\033[94m',
+    'MAGENTA': '\033[95m',
+    'CYAN': '\033[96m',
+    'WHITE': '\033[97m',
+    'RESET': '\033[0m'
+}
+
+
+#def animate_text(text, delay=0.1, color=''):
+#    with lock:
+#        for char in text:
+#            if char != ' ':  # Jangan menambahkan spasi setelah setiap karakter
+#                sys.stdout.write(f'{color}{char}')
+#                sys.stdout.flush()
+#                time.sleep(delay)
+#        sys.stdout.write(COLORS['RESET'] + '\n')  # Reset warna setelah selesai
+#        print()
+
+def animate_text(text, delay=0.1, color =' '):
+    with lock:
+        for char in text:
+            sys.stdout.write(f'{color}{char}')
+            sys.stdout.flush()
+            time.sleep(delay)
+        sys.stdout.write(COLORS['RESET'] + '\n')  # Reset warna setelah selesai
+        print()
+
+
+def sing_lyric(lyric, delay, speed, color=''):
+    time.sleep(delay)
+    animate_text(lyric, speed, color)
+
+def sing_song():
+    lyrics = [
+        ("im mister lover man", 0.1, 'WHITE'),
+        ("ohhh, and i miss my lover", 0.08, 'WHITE'),
+        ("the way in which u talk to me", 0.1,'WHITE'),
+        ("suguru", 0.08,'BLUE'),
+        ("have me wishing i were gone", 0.1, 'WHITE'),
+        ("satoru", 0.08, 'BLUE'),
+        ("the ways that u say my name", 0.1, 'WHITE'),
+        ("have me running on and on", 0.12, 'CYAN'),
+    ]
+    delays = [0.7, 2.0, 5.0, 1.3, 0.5, 1.0, 1.8, 1.8]
+    
+    threads = []
+    for i in range(len(lyrics)):
+        lyric, speed, color = lyrics[i]
+        t = Thread(target=sing_lyric, args=(lyric, delays[i], speed, COLORS[color]))
+        threads.append(t)
+        t.start()
+        t.join()
+    
+    for thread in threads:
+        thread.join()
+
+if __name__ == "__main__":
+    sing_song() 
